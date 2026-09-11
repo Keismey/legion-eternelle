@@ -4,6 +4,13 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0b0b10">
   <link rel="icon" href="icon-192.png">
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("sw.js");
+      });
+    }
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0b10">
@@ -3622,6 +3629,37 @@
   background: rgba(255, 255, 255, .015);
 }
 
+	  .drop-rates-link {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 11px;
+  text-align: center;
+  text-decoration: underline;
+  background: transparent;
+  border: none;
+}
+
+.drop-rate-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+}
+
+.drop-rate-label {
+  color: var(--text);
+  font-size: 13px;
+}
+
+.drop-rate-value {
+  color: var(--gold);
+  font-size: 13px;
+  font-weight: bold;
+}
+	
   </style>
 </head>
 
@@ -3806,7 +3844,10 @@
 
 
 <div class="pull-grid">
-  <button id="pullOneBtn" class="pull-card pull-single" type="button">
+    <button type="button" id="dropRatesBtn" class="drop-rates-link">
+    🎲 Voir les taux de recrutement
+  </button>
+	<button id="pullOneBtn" class="pull-card pull-single" type="button">
     <span class="pull-card-icon">💎</span>
     <span class="pull-card-text">
       <span class="pull-card-name">Recrutement x1</span>
@@ -5061,6 +5102,7 @@ zoneChangeStatus:
       pullOneBtn: document.getElementById("pullOneBtn"),
       pullTenBtn: document.getElementById("pullTenBtn"),
 	  adPullFiveBtn: document.getElementById("adPullFiveBtn"),
+	dropRatesBtn: document.getElementById("dropRatesBtn"),
       usePullTicketBtn: document.getElementById("usePullTicketBtn"),
       pullTicketPriceText: document.getElementById("pullTicketPriceText"),
       gachaResult: document.getElementById("gachaResult"),
@@ -12843,6 +12885,54 @@ function checkSecondaryTutorials() {
   }
 }
 
+let audioContext = null;
+
+function playClickSound() {
+  if (!state.settings.soundEnabled) {
+    return;
+  }
+
+  try {
+    if (!audioContext) {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(880, audioContext.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(
+      440,
+      audioContext.currentTime + .08
+    );
+
+    gain.gain.setValueAtTime(.12, audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(
+      .001,
+      audioContext.currentTime + .1
+    );
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + .1);
+  } catch (error) {
+    console.error("Erreur son de clic :", error);
+  }
+}
+
+document.addEventListener(
+  "click",
+  event => {
+    if (event.target.closest("button")) {
+      playClickSound();
+    }
+  },
+  true
+);
+	
 function playTurn() {
   if (!state.monsters.length) {
     return;
@@ -18808,6 +18898,44 @@ if (
       );
     }
 
+	function openDropRatesModal() {
+  openModal(
+    "🎲 Taux de recrutement",
+    `
+      <div class="guide-section-text">
+        Voici les probabilités d'obtention par recrutement :
+      </div>
+
+      <div class="drop-rate-row">
+        <span class="drop-rate-label">Commun</span>
+        <span class="drop-rate-value">60 %</span>
+      </div>
+      <div class="drop-rate-row">
+        <span class="drop-rate-label">Rare</span>
+        <span class="drop-rate-value">25 %</span>
+      </div>
+      <div class="drop-rate-row">
+        <span class="drop-rate-label">Épique</span>
+        <span class="drop-rate-value">10 %</span>
+      </div>
+      <div class="drop-rate-row">
+        <span class="drop-rate-label">Légendaire</span>
+        <span class="drop-rate-value">4,5 %</span>
+      </div>
+      <div class="drop-rate-row">
+        <span class="drop-rate-label">🌟 Héros unique</span>
+        <span class="drop-rate-value">0,5 %</span>
+      </div>
+    `,
+    [
+      {
+        label: "Fermer",
+        callback: closeModal
+      }
+    ]
+  );
+}
+
     function openGuideModal() {
       const sections = [
         {
@@ -19037,7 +19165,11 @@ dom.dailyLoginBtn.addEventListener(
       "click",
       openOptionsMenu
     );
-
+dom.dropRatesBtn.addEventListener(
+  "click",
+  openDropRatesModal
+);
+	
 dom.useShopTicketBtn.addEventListener(
   "click",
   useShopTicket
