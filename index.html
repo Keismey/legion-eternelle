@@ -3437,9 +3437,13 @@
   z-index: 9998;
 }
 
+.mobile-tabs {
+  z-index: 9998;
+}
+
 .tutorial-spotlight-ring {
-  position: fixed !important;
-  z-index: 9001;
+  position: fixed;
+  z-index: 10000;
   pointer-events: none;
   border-radius: var(--radius-md);
   box-shadow: 0 0 0 3px var(--gold), 0 0 24px rgba(255, 215, 0, .7);
@@ -3449,7 +3453,7 @@
   position: fixed !important;
   left: 12px;
   right: 12px;
-  bottom: 84px;
+  bottom: 100px;
   z-index: 9999;
   padding: 14px;
   border: 1px solid rgba(255, 215, 0, .45);
@@ -3580,10 +3584,14 @@
   background: rgba(255, 255, 255, .03);
 }
 
-.options-danger-zone {
-  margin-top: 18px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(255, 82, 82, .25);
+#modalActions .danger {
+  color: #fff;
+  border-color: rgba(255, 82, 82, .6);
+  background: var(--red);
+}
+
+#modalActions .danger:hover {
+  background: #ff3b30;
 }
 
 .options-menu-item.danger {
@@ -3629,35 +3637,22 @@
   background: rgba(255, 255, 255, .015);
 }
 
-	  .drop-rates-link {
-  display: block;
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 8px;
-  color: var(--muted);
-  font-size: 11px;
-  text-align: center;
-  text-decoration: underline;
-  background: transparent;
-  border: none;
-}
-
-.drop-rate-row {
+.zone-modal-card-badge.open {
   display: flex;
-  justify-content: space-between;
-  padding: 8px 4px;
-  border-bottom: 1px solid rgba(255, 255, 255, .08);
+  align-items: center;
+  gap: 4px;
+  color: #5cff8f;
+  background: #0b0b10;
+  border: 1px solid rgba(92, 255, 143, .6);
 }
 
-.drop-rate-label {
-  color: var(--text);
-  font-size: 13px;
-}
-
-.drop-rate-value {
-  color: var(--gold);
-  font-size: 13px;
-  font-weight: bold;
+.zone-modal-card-badge.open::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #5cff8f;
+  box-shadow: 0 0 4px rgba(92, 255, 143, .8);
 }
 	
   </style>
@@ -3845,9 +3840,6 @@
 
 
 <div class="pull-grid">
-    <button type="button" id="dropRatesBtn" class="drop-rates-link">
-    🎲 Voir les taux de recrutement
-  </button>
 	<button id="pullOneBtn" class="pull-card pull-single" type="button">
     <span class="pull-card-icon">💎</span>
     <span class="pull-card-text">
@@ -5103,7 +5095,6 @@ zoneChangeStatus:
       pullOneBtn: document.getElementById("pullOneBtn"),
       pullTenBtn: document.getElementById("pullTenBtn"),
 	  adPullFiveBtn: document.getElementById("adPullFiveBtn"),
-	dropRatesBtn: document.getElementById("dropRatesBtn"),
       usePullTicketBtn: document.getElementById("usePullTicketBtn"),
       pullTicketPriceText: document.getElementById("pullTicketPriceText"),
       gachaResult: document.getElementById("gachaResult"),
@@ -5315,21 +5306,17 @@ function getMagicMalusResistance(hero) {
         : 0;
     }
 
-function isLogNearBottom(
+function isLogNearTop(
   element,
   threshold = 24
 ) {
-  return (
-    element.scrollHeight -
-    element.scrollTop -
-    element.clientHeight <= threshold
-  );
+  return element.scrollTop <= threshold;
 }
 
 
 function logMessage(message) {
-  const wasNearBottom =
-    isLogNearBottom(dom.log);
+  const wasNearTop =
+    isLogNearTop(dom.log);
 
   const previousScrollTop =
     dom.log.scrollTop;
@@ -5345,21 +5332,21 @@ function logMessage(message) {
    */
   line.innerHTML = message;
 
-  dom.log.appendChild(line);
+  dom.log.insertBefore(line, dom.log.firstChild);
 
   /*
-   * Si le joueur suivait le bas du journal,
-   * on continue à suivre les nouvelles entrées.
+   * Si le joueur suivait le haut du journal (les nouveautés),
+   * on continue à l'y ramener.
    *
-   * S'il lisait une ancienne entrée,
-   * sa position est conservée.
+   * S'il lisait une ancienne entrée plus bas, on compense
+   * exactement le décalage causé par la nouvelle ligne
+   * insérée en haut, pour qu'il ne bouge pas à l'écran.
    */
-  if (wasNearBottom) {
-    dom.log.scrollTop =
-      dom.log.scrollHeight;
+  if (wasNearTop) {
+    dom.log.scrollTop = 0;
   } else {
     dom.log.scrollTop =
-      previousScrollTop;
+      previousScrollTop + line.offsetHeight;
   }
 }
 
@@ -7836,8 +7823,43 @@ function selectZone(zoneId) {
     }
 
 function openZoneSelector() {
+  const today =
+    getTodayWeekday();
+
+  function getZoneSortWeight(zoneDef) {
+    if (zoneDef.id === "general") {
+      return -1000;
+    }
+
+    const access =
+      getZoneAccessInfo(zoneDef.id);
+
+    if (access.available) {
+      return -100;
+    }
+
+    const weekdays =
+      getZoneScheduledWeekdays(zoneDef.id);
+
+    if (!weekdays.length) {
+      return 999;
+    }
+
+    return Math.min(
+      ...weekdays.map(weekday =>
+        ((weekday - today + 7) % 7) || 7
+      )
+    );
+  }
+
+  const sortedZones =
+    [...ZONES].sort(
+      (a, b) =>
+        getZoneSortWeight(a) - getZoneSortWeight(b)
+    );
+
   const options =
-    ZONES.map(zoneDef => {
+    sortedZones.map(zoneDef => {
       const zoneState =
         state.zones[zoneDef.id] ||
         createZoneState();
@@ -7930,11 +7952,17 @@ function openZoneSelector() {
               `
               : access.unlockedByAd
                 ? `
-                  <span class="zone-modal-card-badge">
-                    Pub
+                  <span class="zone-modal-card-badge open">
+                    📺 Pub
                   </span>
                 `
-                : ""
+                : access.available
+                  ? `
+                    <span class="zone-modal-card-badge open">
+                      Ouvert
+                    </span>
+                  `
+                  : ""
           }
         </button>
       `;
@@ -8469,7 +8497,7 @@ const TUTORIAL_STEPS = Object.freeze([
   { text: "Voici un recrutement x10 offert, pour découvrir le système sans rien dépenser.", overlay: true, showNext: false, forceSelector: "#pullTenBtn" },
   { text: "Voilà vos nouveaux héros ! Certains sont plus rares que d'autres (Commun, Rare, Épique, Légendaire) — plus la rareté est élevée, plus ses statistiques de base sont fortes. Si vous obtenez plusieurs fois le même héros, il gagne un bonus de doublon qui le renforce encore.", overlay: true, showNext: true },
   { text: "Retournons sur l'écran de Combat.", overlay: true, showNext: false, forceTab: "combatPanel" },
-  { text: "En plus de la Zone Générale, il existe des zones dédiées à des boss puissants, où l'on trouve des pièces d'équipement de set exclusives.", overlay: true, showNext: false, forceSelector: "#zoneSelectBtn" },
+  { text: "En plus de la Zone Générale, il existe des zones dédiées à des boss puissants, où l'on trouve des pièces d'équipement de set exclusives — et c'est là que vous trouverez la majorité de vos Éclats.", overlay: true, showNext: false, forceSelector: "#zoneSelectBtn" },
   { text: "Ces boss sont beaucoup trop forts pour votre équipe actuelle. Vous pourrez les affronter une fois votre équipe plus développée.", overlay: true, showNext: true, closeZoneModal: true },
   { text: "C'est tout pour la découverte ! Vous pouvez maintenant jouer librement.", overlay: true, showNext: true, finalStep: true }
 ]);
@@ -13099,12 +13127,14 @@ function decreaseEffectDurationsForAll() {
         defeatedMonsters.length;
 
       const goldReward =
-        (
-          isBoss
-            ? 45 + zoneState.level * 6
-            : (5 + zoneState.level * 1.2) *
-              monsterCount
-        ) * .15 * .08;
+        Math.round(
+          (
+            isBoss
+              ? 45 + zoneState.level * 6
+              : (5 + zoneState.level * 1.2) *
+                monsterCount
+          ) * .15 * .08
+        );
 
       state.gold += goldReward;
 
@@ -13227,8 +13257,11 @@ function defeat(clearMonsters = false) {
     zoneState.wins = 0;
   } else {
     const consolationGold =
-      Math.round(
-        (5 + zoneState.level * 1.2) * .25 * .15 * .08
+      Math.max(
+        1,
+        Math.ceil(
+          (5 + zoneState.level * 1.2) * .25 * .15 * .08
+        )
       );
 
     state.gold += consolationGold;
@@ -18936,44 +18969,6 @@ if (
       );
     }
 
-	function openDropRatesModal() {
-  openModal(
-    "🎲 Taux de recrutement",
-    `
-      <div class="guide-section-text">
-        Voici les probabilités d'obtention par recrutement :
-      </div>
-
-      <div class="drop-rate-row">
-        <span class="drop-rate-label">Commun</span>
-        <span class="drop-rate-value">60 %</span>
-      </div>
-      <div class="drop-rate-row">
-        <span class="drop-rate-label">Rare</span>
-        <span class="drop-rate-value">25 %</span>
-      </div>
-      <div class="drop-rate-row">
-        <span class="drop-rate-label">Épique</span>
-        <span class="drop-rate-value">10 %</span>
-      </div>
-      <div class="drop-rate-row">
-        <span class="drop-rate-label">Légendaire</span>
-        <span class="drop-rate-value">4,5 %</span>
-      </div>
-      <div class="drop-rate-row">
-        <span class="drop-rate-label">🌟 Héros unique</span>
-        <span class="drop-rate-value">0,5 %</span>
-      </div>
-    `,
-    [
-      {
-        label: "Fermer",
-        callback: closeModal
-      }
-    ]
-  );
-}
-
     function openGuideModal() {
       const sections = [
         {
@@ -19044,7 +19039,10 @@ if (
         {
           icon: "👑",
           title: "Donjons de Boss & Récompenses",
-          text: `Chaque boss a son propre donjon, accessible certains jours
+          text: `Les donjons de boss sont votre <strong>principale source
+            d'Éclats</strong> — bien plus que la Zone Générale, qui n'en
+            offre qu'occasionnellement.<br><br>
+            Chaque boss a son propre donjon, accessible certains jours
             de la semaine (ou débloqué plus tôt via publicité). Un donjon
             se compose de plusieurs vagues d'élite suivies du boss final —
             une défaite, contre un sbire comme contre le boss, remet le
@@ -19062,6 +19060,30 @@ if (
             heures.<br><br>
             Les tickets obtenus via la connexion quotidienne permettent
             d'agir sans dépenser vos ressources habituelles.`
+        },
+        {
+          icon: "📚",
+          title: "Lexique",
+          text: `<strong>Tank</strong> : le héros en première ligne,
+            conçu pour encaisser les dégâts et protéger le reste de
+            l'équipe.<br><br>
+            <strong>DPS</strong> (Dégâts Par Seconde) : le héros
+            spécialisé dans les dégâts bruts au corps-à-corps ou à
+            distance.<br><br>
+            <strong>Mage</strong> : inflige des dégâts à distance via
+            la magie, souvent avec des effets de zone.<br><br>
+            <strong>Soigneur</strong> : restaure les PV de l'équipe et
+            la maintient en vie sur la durée.<br><br>
+            <strong>Rareté</strong> : le niveau de puissance d'un
+            personnage (Commun, Rare, Épique, Légendaire) — plus elle
+            est élevée, plus ses statistiques de base sont fortes.<br><br>
+            <strong>Doublon</strong> : obtenir plusieurs fois le même
+            héros au recrutement renforce sa version déjà possédée au
+            lieu d'en donner un nouveau.<br><br>
+            <strong>Set</strong> : une collection de pièces
+            d'équipement exclusives à un boss, offrant un bonus
+            supplémentaire quand plusieurs pièces de la même
+            collection sont équipées ensemble.`
         }
       ];
 
@@ -19118,24 +19140,25 @@ if (
           {
             label: "Réinitialiser",
             callback: () => {
-              [
-                CONFIG.saveKey,
-                ...CONFIG.oldKeys
-              ].forEach(key => {
-                localStorage.removeItem(key);
-              });
-
-              createEmptyState();
-              generateShopOffers();
-              dom.log.replaceChildren();
-              closeModal();
-
-              logMessage(
-                "🔄 Nouvelle partie commencée."
+              openModal(
+                "⚠️ Confirmation finale",
+                "<p>Cette action est irréversible. Toute votre progression sera définitivement perdue. Êtes-vous sûr ?</p>",
+                [
+                  {
+                    label: "Annuler",
+                    callback: closeModal
+                  },
+                  {
+                    label: "Oui, tout supprimer",
+                    className: "danger",
+                    callback: () => {
+                      window.__skipAutoSave = true;
+                      localStorage.clear();
+                      location.reload();
+                    }
+                  }
+                ]
               );
-
-              renderAll();
-              saveGame();
             }
           }
         ]
@@ -19203,10 +19226,6 @@ dom.dailyLoginBtn.addEventListener(
       "click",
       openOptionsMenu
     );
-dom.dropRatesBtn.addEventListener(
-  "click",
-  openDropRatesModal
-);
 	
 dom.useShopTicketBtn.addEventListener(
   "click",
@@ -19440,16 +19459,21 @@ if (button.dataset.action === "equip") {
       }
     );
 
-    window.addEventListener(
-      "beforeunload",
-      saveGame
-    );
+window.addEventListener(
+  "beforeunload",
+  () => {
+    if (!window.__skipAutoSave) {
+      saveGame();
+    }
+  }
+);
 
     document.addEventListener(
       "visibilitychange",
       () => {
         if (
-          document.visibilityState === "hidden"
+          document.visibilityState === "hidden" &&
+          !window.__skipAutoSave
         ) {
           saveGame();
         }
