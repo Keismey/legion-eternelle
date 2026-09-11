@@ -3664,6 +3664,7 @@
 </head>
 
 <body>
+  <audio id="bgMusic" src="music.mp3" loop preload="none"></audio>
   <div id="splashScreen" class="splash-screen">
     <img
       id="splashStudioLogo"
@@ -12885,6 +12886,37 @@ function checkSecondaryTutorials() {
   }
 }
 
+function startBackgroundMusic() {
+  const music = document.getElementById("bgMusic");
+
+  if (!state.settings.soundEnabled) {
+    return;
+  }
+
+  music.volume = .35;
+
+  music.play().catch(() => {
+    // Lecture auto bloquée par le navigateur — se relance
+    // au prochain clic via le listener ci-dessous.
+  });
+}
+
+function stopBackgroundMusic() {
+  document.getElementById("bgMusic").pause();
+}
+
+document.addEventListener(
+  "click",
+  () => {
+    const music = document.getElementById("bgMusic");
+
+    if (state.settings.soundEnabled && music.paused) {
+      startBackgroundMusic();
+    }
+  },
+  { once: false }
+);
+
 let audioContext = null;
 
 function playClickSound() {
@@ -18862,6 +18894,12 @@ if (
           state.settings.soundEnabled =
             !state.settings.soundEnabled;
 
+          if (state.settings.soundEnabled) {
+            startBackgroundMusic();
+          } else {
+            stopBackgroundMusic();
+          }
+
           saveGame();
           openOptionsMenu();
         });
@@ -19418,6 +19456,7 @@ if (button.dataset.action === "equip") {
       }
     );
 
+    startBackgroundMusic();
     (function runSplashScreen() {
       const screen =
         document.getElementById("splashScreen");
