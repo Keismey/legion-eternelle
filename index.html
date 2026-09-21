@@ -283,7 +283,7 @@
 }
 
 .effect-indicator:hover .effect-tooltip,
-.effect-indicator:focus .effect-tooltip {
+.effect-indicator.tooltip-visible .effect-tooltip {
   display: block;
 }
 
@@ -930,22 +930,23 @@
       background: rgba(255, 215, 0, .08);
     }
 
-    .modal-backdrop {
-      display: flex;
-      position: fixed;
-      inset: 0;
-      z-index: 100;
-      align-items: center;
-      justify-content: center;
-      padding: 18px;
-      background: rgba(0, 0, 0, .75);
-    }
+.modal-backdrop {
+  display: flex;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  padding-bottom: calc(88px + env(safe-area-inset-bottom));
+  background: rgba(0, 0, 0, .75);
+}
 
 .modal {
   display: flex;
   flex-direction: column;
   width: min(100%, 440px);
-  max-height: 90vh;
+  max-height: calc(100dvh - 130px);
   padding: 16px;
   overflow: hidden;
   border: 1px solid var(--line);
@@ -2985,9 +2986,10 @@
 
 .shop-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  margin-bottom: 12px;
 }
 
 .shop-header h3 {
@@ -2996,15 +2998,27 @@
 
 .shop-header-actions {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  max-width: 100%;
+}
+
+.shop-secondary-actions {
+  display: flex;
   gap: 6px;
 }
 
+.shop-secondary-actions .ticket-btn {
+  flex: 1 1 0;
+}
+
 #shopRefreshBtn {
-  min-height: 34px;
-  padding: 5px 8px;
+  min-height: 38px;
+  padding: 8px;
   color: var(--cyan);
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: bold;
   border-color: rgba(86, 224, 224, .4);
   background: rgba(86, 224, 224, .08);
 }
@@ -3110,8 +3124,9 @@
 }
 
 .ticket-btn {
-  min-width: 76px;
-  padding: 8px 10px;
+  min-width: 0;
+  min-height: 34px;
+  padding: 6px 8px;
   color: var(--red);
   font-size: 11px;
   white-space: nowrap;
@@ -3655,6 +3670,177 @@
   box-shadow: 0 0 4px rgba(92, 255, 143, .8);
 }
 	
+.unit-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.unit-detail-icon {
+  font-size: 20px;
+}
+
+.unit-detail-name {
+  color: var(--gold);
+  font-family: var(--font-display);
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.unit-detail-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 3px;
+}
+
+.unit-detail-badge {
+  font-size: 9px;
+  font-weight: bold;
+  padding: 2px 7px;
+  border-radius: 99px;
+}
+
+.unit-detail-badge.boss {
+  color: #ff8a8a;
+  border: 1px solid rgba(255, 82, 82, .4);
+  background: rgba(255, 82, 82, .12);
+}
+
+.unit-detail-badge.elite {
+  color: var(--gold);
+  border: 1px solid rgba(255, 215, 0, .35);
+  background: rgba(255, 215, 0, .1);
+}
+
+.unit-detail-badge.neutral {
+  color: var(--muted);
+  border: 1px solid rgba(255, 255, 255, .15);
+  background: rgba(255, 255, 255, .06);
+}
+
+.unit-detail-badge.spec {
+  color: var(--cyan);
+  border: 1px solid rgba(86, 224, 224, .3);
+  background: rgba(86, 224, 224, .1);
+}
+
+.unit-detail-badge.dead {
+  color: #ff8a8a;
+  border: 1px solid rgba(255, 82, 82, .4);
+  background: rgba(255, 82, 82, .12);
+}
+
+.unit-detail-stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.unit-detail-stat-card {
+  padding: 7px 9px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .03);
+  border-left: 2px solid transparent;
+}
+
+.unit-detail-stat-card.r-common {
+  border-left-color: rgba(170, 170, 184, .5);
+}
+
+.unit-detail-stat-card.r-rare {
+  border-left-color: var(--blue);
+  background: rgba(86, 149, 224, .06);
+}
+
+.unit-detail-stat-card.r-epic {
+  border-left-color: var(--purple);
+  background: rgba(179, 136, 255, .06);
+}
+
+.unit-detail-stat-card.r-legend {
+  border-left-color: var(--gold);
+  background: rgba(255, 215, 0, .07);
+}
+
+.unit-detail-stat-card.r-unique,
+.unit-detail-stat-card.r-set {
+  border-left-color: #ead9a6;
+  background: rgba(234, 217, 166, .07);
+}
+
+.unit-detail-stat-label {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.unit-detail-stat-value {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.unit-detail-section-title {
+  color: var(--purple);
+  font-family: var(--font-display);
+  font-weight: bold;
+  font-size: 11px;
+  letter-spacing: .03em;
+  margin-top: 14px;
+}
+
+.unit-detail-skill-card {
+  padding: 8px 10px;
+  margin-top: 6px;
+  border-left: 2px solid var(--purple);
+  border-radius: 0 8px 8px 0;
+  background: rgba(179, 136, 255, .06);
+}
+
+.unit-detail-skill-name {
+  color: var(--text);
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.unit-detail-skill-desc {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.unit-detail-effect-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.unit-detail-effect-pill {
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 99px;
+}
+
+.unit-detail-effect-pill.bonus {
+  color: var(--gold);
+  border: 1px solid rgba(255, 215, 0, .35);
+  background: rgba(255, 215, 0, .1);
+}
+
+.unit-detail-effect-pill.malus {
+  color: #ff8a8a;
+  border: 1px solid rgba(255, 82, 82, .35);
+  background: rgba(255, 82, 82, .1);
+}
+
+.unit-detail-empty {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 6px;
+}
+
   </style>
 </head>
 
@@ -3947,17 +4133,27 @@
         id="shopRefreshBtn"
         type="button"
       >
-        🔄 Rafraîchir
+        🔄 Rafraîchir (Gratuit)
       </button>
 
-    <button
-      id="useShopTicketBtn"
-      class="ticket-btn"
-      type="button"
-      disabled
-    >
-      🎫 Rafraîchir : 0
-    </button>
+      <div class="shop-secondary-actions">
+        <button
+          id="useShopTicketBtn"
+          class="ticket-btn"
+          type="button"
+          disabled
+        >
+          🎫 Rafraîchir : 0
+        </button>
+
+        <button
+          id="shopGoldRefreshBtn"
+          class="ticket-btn"
+          type="button"
+        >
+          💰 Rafraîchir
+        </button>
+      </div>
     </div>
   </div>
 
@@ -4050,13 +4246,17 @@ bossSetChance: .70,
 bossSetPityLimit: 5,
 bossShards: 90,
 
-      pullCost: 100,
-      pullTenCost: 900,
-      sellPriceRatio: .35,
+pullCost: 100,
+pullTenCost: 900,
+sellPriceRatio: .35,
+
+normalGoldMultiplier: .15 * .08,
+offlineGoldMultiplier: .015,
+
 	  shopDailyFreeRefreshes: 3,
 
       namedChance: .005,
-	  specializationLevel: 20,
+	  specializationLevel: 30,
       duplicateLimit: 100,
         duplicateRefund: 10,
   
@@ -4161,15 +4361,18 @@ function grantOfflineReward(isNewGame) {
 
   const avgMonsterCount = 1.8;
 
-  const goldPerWin =
-    (5 + zoneLevelRef * 1.2) *
-    avgMonsterCount *
-    .15 * .08;
+const goldPerWin =
+  (5 + zoneLevelRef * 1.2) *
+  avgMonsterCount *
+  CONFIG.normalGoldMultiplier;
 
-  const gold =
-    Math.round(
-      passiveWins * goldPerWin * .45
-    );
+const gold =
+  Math.round(
+    passiveWins *
+    goldPerWin *
+    CONFIG.offlineGoldMultiplier
+  );
+
 
   const shardPerWin =
     CONFIG.normalShardChance * 1.5;
@@ -5068,6 +5271,7 @@ invBulkSellBtn:
 
 shopRefreshBtn:
   document.getElementById("shopRefreshBtn"),
+shopGoldRefreshBtn: document.getElementById("shopGoldRefreshBtn"),
 
 useShopTicketBtn:
   document.getElementById("useShopTicketBtn"),
@@ -5167,6 +5371,7 @@ notifications: {
 },
 
 shopRefreshesUsed: 0,
+shopGoldRefreshesUsed: 0,
 shopRefreshDate: "",
 
 lastGacha: "",
@@ -5689,6 +5894,7 @@ state.notifications = {
 };
 
 state.shopRefreshesUsed = 0;
+state.shopGoldRefreshesUsed = 0;
 state.shopRefreshDate =
   getTodayKey();
 
@@ -6652,6 +6858,14 @@ showCombatXP(
   "Slime",
   "Harpie"
 ];
+
+const MONSTER_ABILITY_TYPE_DESCRIPTIONS = Object.freeze({
+  damage: "Inflige des dégâts directs.",
+  healingReduction: "Inflige des dégâts et réduit les soins reçus par la cible.",
+  woundedDamage: "Inflige des dégâts, renforcés si la cible est déjà blessée.",
+  gaugeReduction: "Inflige des dégâts et ralentit le chargement de la jauge de compétence de la cible.",
+  teamGaugeReduction: "Inflige des dégâts et ralentit légèrement les jauges de compétence de toute l'équipe."
+});
 
 const MONSTER_ABILITIES = Object.freeze({
   "Gobelin": {
@@ -8267,9 +8481,9 @@ function unlockZoneWithAd(zoneId) {
 }
 
 const ZONE_CURVE = Object.freeze({
-  atk: { base: 8, growth: 1.19, softcapLevel: 12, linearRate: .10 },
-  hp: { base: 30, growth: 1.22, softcapLevel: 12, linearRate: .12 },
-  def: { base: 3, growth: 1.20, softcapLevel: 12, linearRate: .09 }
+  atk: { base: 8, growth: 1.165, softcapLevel: 25, linearRate: .10 },
+  hp: { base: 30, growth: 1.185, softcapLevel: 25, linearRate: .12 },
+  def: { base: 3, growth: 1.175, softcapLevel: 25, linearRate: .09 }
 });
 
 function getZoneCurveMultiplier(level, curve) {
@@ -8286,10 +8500,24 @@ function getZoneCurveMultiplier(level, curve) {
    * rester au même rythme que les objets, qui sont
    * eux-mêmes linéaires. Les deux courbes avancent
    * ensemble indéfiniment, sans jamais diverger.
+   *
+   * Le taux linéaire s'intensifie légèrement tous les
+   * 10 niveaux passé le plafond, pour une difficulté qui
+   * s'accélère progressivement en fin de partie, sans
+   * jamais créer de mur brutal comme le faisaient les élites.
    */
+  const levelsPastSoftcap =
+    level - curve.softcapLevel;
+
+  const accelerationSteps =
+    Math.floor(levelsPastSoftcap / 10);
+
+  const effectiveLinearRate =
+    curve.linearRate * (1 + accelerationSteps * .15);
+
   return (
     cappedValue *
-    (1 + (level - curve.softcapLevel) * curve.linearRate)
+    (1 + levelsPastSoftcap * effectiveLinearRate)
   );
 }
 
@@ -8760,12 +8988,8 @@ function createMonsterGroup(isBoss, isElite = false, forcedCount = null, namePoo
         return;
       }
 
-      const isEliteGroup =
-        (zoneState.wins + 1) % 10 === 0 &&
-        zoneState.level % 3 === 0;
-
       state.monsters =
-        createMonsterGroup(false, isEliteGroup);
+        createMonsterGroup(false, false);
 
       dom.monsterUI.hidden = false;
 
@@ -11603,7 +11827,9 @@ function useMonsterSkill(monster) {
   }
 
   const ability =
-    MONSTER_ABILITIES[monster.name];
+    MONSTER_ABILITIES[
+      monster.name.replace(/^⭐ /, "")
+    ];
 
   if (!ability) {
     performMonsterNormalAttack(monster);
@@ -13126,15 +13352,23 @@ function decreaseEffectDurationsForAll() {
       const monsterCount =
         defeatedMonsters.length;
 
-      const goldReward =
-        Math.round(
-          (
-            isBoss
-              ? 45 + zoneState.level * 6
-              : (5 + zoneState.level * 1.2) *
-                monsterCount
-          ) * .15 * .08
-        );
+const goldReward =
+  Math.max(
+    1,
+    Math.round(
+      (
+        isBoss
+          ? 45 + zoneState.level * 6
+          : (
+              5 +
+              zoneState.level * 1.2
+            ) *
+            monsterCount
+      ) *
+      CONFIG.normalGoldMultiplier
+    )
+  );
+
 
       state.gold += goldReward;
 
@@ -13256,13 +13490,18 @@ function defeat(clearMonsters = false) {
   if (zoneDef.bossId) {
     zoneState.wins = 0;
   } else {
-    const consolationGold =
-      Math.max(
-        1,
-        Math.ceil(
-          (5 + zoneState.level * 1.2) * .25 * .15 * .08
-        )
-      );
+const consolationGold =
+  Math.max(
+    1,
+    Math.round(
+      (
+        5 +
+        zoneState.level * 1.2
+      ) *
+      .25
+    )
+  );
+
 
     state.gold += consolationGold;
 
@@ -13572,22 +13811,32 @@ function getItemPrice(item) {
       0
     );
 
-  const rarityMultiplier =
-    rarity.multiplier || 1;
+const rarityPriceMultiplier = {
+  commun: 1,
+  rare: 1.25,
+  epique: 1.6,
+  legendaire: 2.1,
+  unique: 2.5,
+  set: 2.5
+};
 
-  return Math.max(
-    10,
-    round(
-      (
-        20 +
-        getActiveZone().level * 10 +
-        totalStats * 4
-      ) *
-      rarityMultiplier *
-      1.5 *
-      2
-    )
-  );
+const priceMultiplier =
+  rarityPriceMultiplier[item.rarity] || 1;
+
+const basePrice =
+  12 +
+  getActiveZone().level * 4 +
+  totalStats * 2;
+
+return Math.max(
+  15,
+  round(
+    basePrice *
+    priceMultiplier *
+    1.6
+  )
+);
+
 }
 
 function generateShopOffers() {
@@ -13643,6 +13892,16 @@ function getShopRefreshesRemaining() {
 }
 
 function updateShopRefreshUI() {
+  if (dom.shopGoldRefreshBtn) {
+    const freeRemaining =
+      getShopRefreshesRemaining();
+
+    dom.shopGoldRefreshBtn.disabled =
+      freeRemaining > 0;
+
+    dom.shopGoldRefreshBtn.textContent =
+      `💰 Rafraîchir (${getShopGoldRefreshCost()})`;
+  }
   if (
     !dom.shopRefreshBtn ||
     !dom.shopRefreshInfo
@@ -13656,7 +13915,7 @@ function updateShopRefreshUI() {
   if (remaining > 0) {
     dom.shopRefreshBtn.disabled = false;
     dom.shopRefreshBtn.textContent =
-      "🔄 Rafraîchir";
+      "🔄 Rafraîchir (Gratuit)";
 
     dom.shopRefreshInfo.textContent =
       `${remaining} rafraîchissement${
@@ -13670,13 +13929,45 @@ function updateShopRefreshUI() {
   } else {
     dom.shopRefreshBtn.disabled = false;
     dom.shopRefreshBtn.textContent =
-      "📺 Rafraîchir";
+      "📺 Rafraîchir (Pub)";
 
     dom.shopRefreshInfo.textContent =
       "Rafraîchissements gratuits épuisés : " +
       "regarde une publicité pour continuer. " +
       `Renouvellement complet dans ${getTimeUntilNextDayReset()}.`;
   }
+}
+
+function getShopGoldRefreshCost() {
+  return Math.round(
+    50 *
+    Math.max(1, getActiveZone().level) *
+    Math.pow(1.15, state.shopGoldRefreshesUsed)
+  );
+}
+
+function refreshShopWithGold() {
+  const cost =
+    getShopGoldRefreshCost();
+
+  if (state.gold < cost) {
+    showToast(
+      `❌ Pas assez d'or (${cost} nécessaires).`
+    );
+    return;
+  }
+
+  state.gold -= cost;
+  state.shopGoldRefreshesUsed++;
+
+  generateShopOffers();
+
+  logMessage(
+    `🔄 Boutique rafraîchie contre ${cost} or.`
+  );
+
+  renderAll();
+  saveGame();
 }
 
 function refreshShopOffers() {
@@ -14445,6 +14736,19 @@ function formatEffectDetails(effect) {
   return details.join(" · ");
 }
 
+document.addEventListener("click", event => {
+  const indicator = event.target.closest(".effect-indicator");
+
+  document.querySelectorAll(".effect-indicator.tooltip-visible").forEach(el => {
+    if (el !== indicator) {
+      el.classList.remove("tooltip-visible");
+    }
+  });
+
+  if (indicator) {
+    indicator.classList.toggle("tooltip-visible");
+  }
+});
 
 function renderEffectIndicators(entity) {
   const effects = [
@@ -14542,6 +14846,304 @@ if (
     </span>
   `;
 }
+
+function openCombatUnitDetail(unitType, entityId) {
+  if (unitType === "monster") {
+    const monster =
+      state.monsters.find(m => m.id === entityId);
+
+    if (!monster) {
+      return;
+    }
+
+    const isDead =
+      monster.hp <= 0;
+
+    const bossDefinition =
+      monster.boss
+        ? getBossDefinition(monster)
+        : null;
+
+    const skillCards =
+      monster.boss
+        ? [
+            {
+              name: bossDefinition?.normalSkill?.name || "Attaque",
+              desc: BOSS_SKILL_DESCRIPTIONS[monster.bossId]?.normal || ""
+            },
+            {
+              name: bossDefinition?.strongSkill?.name || "Attaque forte",
+              desc: BOSS_SKILL_DESCRIPTIONS[monster.bossId]?.strong || ""
+            }
+          ]
+        : (() => {
+            const ability =
+              MONSTER_ABILITIES[
+                monster.name.replace(/^⭐ /, "")
+              ];
+
+            if (!ability) return [];
+
+            return [{
+              name: ability.name,
+              desc: MONSTER_ABILITY_TYPE_DESCRIPTIONS[ability.type] || ""
+            }];
+          })();
+
+    const effects =
+      getEffects(monster);
+
+    const effectsHtml =
+      effects.length
+        ? `
+          <div class="unit-detail-effect-pills">
+            ${effects.map(effect => `
+              <span class="unit-detail-effect-pill ${effect.type}">
+                ${effect.type === "bonus" ? "▲" : "▼"}
+                ${escapeHTML(getEffectDisplay(effect).label)}
+                ${
+                  formatEffectDetails(effect)
+                    ? ` · ${escapeHTML(formatEffectDetails(effect))}`
+                    : ""
+                }
+              </span>
+            `).join("")}
+          </div>
+        `
+        : `<div class="unit-detail-empty">Aucun effet actif.</div>`;
+
+    openModal(
+      "",
+      `
+        <div class="unit-detail-header">
+          <span class="unit-detail-icon">
+            ${monster.boss ? "👑" : monster.elite ? "⭐" : "👹"}
+          </span>
+          <div>
+            <div class="unit-detail-name">${escapeHTML(monster.name.replace(/^⭐ /, ""))}</div>
+            <div class="unit-detail-badges">
+              ${monster.boss ? `<span class="unit-detail-badge boss">BOSS</span>` : ""}
+              ${monster.boss ? `<span class="unit-detail-badge elite">PHASE ${monster.phase || 1}</span>` : ""}
+              ${!monster.boss && monster.elite ? `<span class="unit-detail-badge elite">ÉLITE</span>` : ""}
+              ${isDead ? `<span class="unit-detail-badge dead">☠ MORT</span>` : ""}
+            </div>
+          </div>
+        </div>
+
+        <div class="unit-detail-stat-grid">
+          <div class="unit-detail-stat-card">
+            <div class="unit-detail-stat-label">PV</div>
+            <div class="unit-detail-stat-value">${round(monster.hp)} / ${round(monster.hpMax)}</div>
+          </div>
+          <div class="unit-detail-stat-card">
+            <div class="unit-detail-stat-label">Attaque</div>
+            <div class="unit-detail-stat-value">${round(monster.atk)}</div>
+          </div>
+          <div class="unit-detail-stat-card">
+            <div class="unit-detail-stat-label">Défense</div>
+            <div class="unit-detail-stat-value">${round(monster.def)}</div>
+          </div>
+          <div class="unit-detail-stat-card">
+            <div class="unit-detail-stat-label">Statut</div>
+            <div class="unit-detail-stat-value" style="color:${isDead ? "#ff8a8a" : "#5cff8f"}">
+              ${isDead ? "Mort" : "En vie"}
+            </div>
+          </div>
+        </div>
+
+        ${
+          skillCards.length
+            ? `
+              <div class="unit-detail-section-title">COMPÉTENCES</div>
+              ${skillCards.map(s => `
+                <div class="unit-detail-skill-card">
+                  <div class="unit-detail-skill-name">${escapeHTML(s.name)}</div>
+                  <div class="unit-detail-skill-desc">${escapeHTML(s.desc)}</div>
+                </div>
+              `).join("")}
+            `
+            : ""
+        }
+
+        <div class="unit-detail-section-title">EFFETS ACTIFS</div>
+        ${effectsHtml}
+      `,
+      [
+        { label: "Fermer", callback: closeModal }
+      ]
+    );
+
+    return;
+  }
+
+  if (unitType === "hero") {
+    const hero =
+      party.find(h => h.entityId === entityId);
+
+    if (!hero) {
+      return;
+    }
+
+    const info =
+      classById(hero.classId);
+
+    const isDead =
+      hero.hp <= 0;
+
+    const classAbility =
+      CLASS_ABILITIES[hero.classId];
+
+    const specAbility =
+      hero.spec
+        ? SPEC_ABILITIES[hero.spec]
+        : null;
+
+    const equipmentHtml =
+      CONFIG.slots.map(slot => {
+        const item =
+          getEquipment(hero, slot);
+
+        return `
+          <div class="unit-detail-stat-card ${item ? item.rarityClass : ""}">
+            <div class="unit-detail-stat-label">${escapeHTML(slot)}</div>
+            <div class="unit-detail-stat-value ${item ? item.rarityClass : ""}" style="${item ? "" : "color:var(--muted);font-weight:normal;"}">
+              ${item ? escapeHTML(item.name) : "Aucun"}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+    const effects =
+      getEffects(hero);
+
+    const activeSets =
+      getActiveSetBonuses(hero);
+
+    const setPillsHtml =
+      activeSets.map(({ setId, set }) => {
+        const pills = [
+          `<span class="unit-detail-effect-pill bonus">
+            ▲ ${escapeHTML(set.name)} (3) · ${escapeHTML(set.bonus3.description)}
+          </span>`
+        ];
+
+        if (hasActiveSetBonus5(hero, setId)) {
+          pills.push(`
+            <span class="unit-detail-effect-pill bonus">
+              ▲ ${escapeHTML(set.name)} (5) · ${escapeHTML(set.bonus5.description)}
+            </span>
+          `);
+        }
+
+        return pills.join("");
+      }).join("");
+
+    const effectsHtml =
+      effects.length || activeSets.length
+        ? `
+          <div class="unit-detail-effect-pills">
+            ${setPillsHtml}
+            ${effects.map(effect => `
+              <span class="unit-detail-effect-pill ${effect.type}">
+                ${effect.type === "bonus" ? "▲" : "▼"}
+                ${escapeHTML(getEffectDisplay(effect).label)}
+                ${
+                  formatEffectDetails(effect)
+                    ? ` · ${escapeHTML(formatEffectDetails(effect))}`
+                    : ""
+                }
+              </span>
+            `).join("")}
+          </div>
+        `
+        : `<div class="unit-detail-empty">Aucun effet actif.</div>`;
+
+    openModal(
+      "",
+      `
+        <div class="unit-detail-header">
+          <span class="unit-detail-icon">${hero.named ? "🌟" : info.icon}</span>
+          <div>
+            <div class="unit-detail-name">${escapeHTML(hero.name)}</div>
+            <div class="unit-detail-badges">
+              <span class="unit-detail-badge neutral">NV. ${hero.level}</span>
+              ${hero.spec ? `<span class="unit-detail-badge spec">${escapeHTML(hero.spec.toUpperCase())}</span>` : ""}
+              ${isDead ? `<span class="unit-detail-badge dead">☠ MORT</span>` : ""}
+            </div>
+          </div>
+        </div>
+
+        <div class="unit-detail-stat-grid">
+          <div class="unit-detail-stat-card">
+            <div class="unit-detail-stat-label">PV</div>
+            <div class="unit-detail-stat-value">${round(hero.hp)} / ${round(hero.hpMax)}</div>
+          </div>
+          <div class="unit-detail-stat-card">
+            <div class="unit-detail-stat-label">Force</div>
+            <div class="unit-detail-stat-value">${round(hero.stats.force)}</div>
+          </div>
+          <div class="unit-detail-stat-card">
+            <div class="unit-detail-stat-label">Dextérité</div>
+            <div class="unit-detail-stat-value">${round(hero.stats.dex)}</div>
+          </div>
+          <div class="unit-detail-stat-card">
+            <div class="unit-detail-stat-label">Magie</div>
+            <div class="unit-detail-stat-value">${round(hero.stats.mag)}</div>
+          </div>
+          <div class="unit-detail-stat-card">
+            <div class="unit-detail-stat-label">Esprit</div>
+            <div class="unit-detail-stat-value">${round(hero.stats.esprit)}</div>
+          </div>
+        </div>
+
+        <div class="unit-detail-section-title">COMPÉTENCES</div>
+        <div class="unit-detail-skill-card">
+          <div class="unit-detail-skill-name">${escapeHTML(classAbility.name)}</div>
+          <div class="unit-detail-skill-desc">${escapeHTML(classAbility.description || "")}</div>
+        </div>
+        ${
+          specAbility
+            ? `
+              <div class="unit-detail-skill-card">
+                <div class="unit-detail-skill-name">${escapeHTML(specAbility.name)}</div>
+                <div class="unit-detail-skill-desc">${escapeHTML(specAbility.description || "")}</div>
+              </div>
+            `
+            : ""
+        }
+
+        <div class="unit-detail-section-title">ÉQUIPEMENT</div>
+        <div class="unit-detail-stat-grid">
+          ${equipmentHtml}
+        </div>
+
+        <div class="unit-detail-section-title">EFFETS ACTIFS</div>
+        ${effectsHtml}
+      `,
+      [
+        { label: "Fermer", callback: closeModal }
+      ]
+    );
+  }
+}
+
+document.addEventListener("click", event => {
+  const unit =
+    event.target.closest("[data-combat-unit-type]");
+
+  if (!unit) {
+    return;
+  }
+
+  if (event.target.closest(".effect-indicator")) {
+    return;
+  }
+
+  openCombatUnitDetail(
+    unit.dataset.combatUnitType,
+    unit.dataset.combatUnitId
+  );
+});
 
 function renderMonsterParty() {
   if (!state.monsters.length) {
@@ -14804,15 +15406,6 @@ hero.named
               }">
 ${hero.named ? "🌟" : info.icon}
 ${escapeHTML(hero.name)}
-${
-  hero.named && hero.title
-    ? `
-      <small class="named-title">
-        ${escapeHTML(hero.title)}
-      </small>
-    `
-    : ""
-}
 
               </span>
 
@@ -16050,14 +16643,15 @@ if (inventoryFilters.role === "normal") {
       const rarity =
         rarityByKey(item.rarity);
 
-      return Math.max(
-        5,
-        round(
-          totalStats *
-          .4 *
-          (rarity.multiplier || 1)
-        )
-      );
+return Math.max(
+  5,
+  round(
+    totalStats *
+    .5 *
+    (rarity.multiplier || 1)
+  )
+);
+
     }
 
 function isItemSellProtected(item) {
@@ -18324,6 +18918,8 @@ shopOffers: state.shopOffers,
 
 shopRefreshesUsed:
   state.shopRefreshesUsed,
+shopGoldRefreshesUsed:
+  state.shopGoldRefreshesUsed,
 
 shopRefreshDate:
   state.shopRefreshDate,
@@ -18475,6 +19071,8 @@ state.zoneChangeMessage =
             ? data.shards
             : 0;
 
+state.shopGoldRefreshesUsed =
+  Number(data.shopGoldRefreshesUsed) || 0;
 state.shopRefreshesUsed =
   clamp(
     Number(data.shopRefreshesUsed) || 0,
@@ -19230,6 +19828,11 @@ dom.dailyLoginBtn.addEventListener(
 dom.useShopTicketBtn.addEventListener(
   "click",
   useShopTicket
+);
+
+dom.shopGoldRefreshBtn.addEventListener(
+  "click",
+  refreshShopWithGold
 );
 
 dom.shopRefreshBtn.addEventListener(
