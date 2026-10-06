@@ -3,6 +3,18 @@
 // et changer CACHE dans sw.js pour que les joueurs reçoivent la mise à jour.
 export const PATCHNOTES = [
   {
+    version: "2.0.2",
+    date: "2026-10-06",
+    fr: [
+      "Nouvelle musique de boss : elle prend le relais en fondu dès qu'un boss apparaît.",
+      "Les créatures invoquées par les boss corrompus (tréants et éclats de roche) ont leurs illustrations.",
+    ],
+    en: [
+      "New boss music: it fades in as soon as a boss shows up.",
+      "Creatures summoned by corrupted bosses (treants and rock shards) now have their own artwork.",
+    ],
+  },
+  {
     version: "2.0.1",
     date: "2026-10-06",
     fr: [
