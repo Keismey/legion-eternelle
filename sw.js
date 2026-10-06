@@ -1,6 +1,6 @@
 // Service worker : le jeu fonctionne hors connexion une fois installé.
 // Changer CACHE à chaque mise en ligne pour forcer la mise à jour.
-const CACHE = "legion-eternelle-v2.13.0";
+const CACHE = "legion-eternelle-v2.14.0";
 const FILES = [
   "./",
   "./index.html",
@@ -103,8 +103,15 @@ const FILES = [
   "./js/ui/tutorial.js",
 ];
 
+// Les fichiers sont lus avec cache: "reload" pour ne pas recopier une ancienne
+// version encore gardée par le navigateur (GitHub Pages la garde 10 min).
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(FILES)).then(() => self.skipWaiting()));
+  event.waitUntil(
+    caches
+      .open(CACHE)
+      .then((cache) => cache.addAll(FILES.map((f) => new Request(f, { cache: "reload" }))))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener("activate", (event) => {
@@ -116,21 +123,29 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-// Page : réseau d'abord (pour recevoir les mises à jour), cache en secours.
-// Fichiers : cache d'abord, réseau sinon.
+// Code (page, JS, CSS, JSON) : réseau d'abord, pour que tout vienne de la même version ;
+// le cache ne sert que hors connexion. Images, sons, polices : cache d'abord.
+const CODE = /\.(?:html|js|css|json)$/;
+
+function networkFirst(request) {
+  return fetch(request.url, { cache: "no-cache" })
+    .then((response) => {
+      if (response.ok) {
+        const copy = response.clone();
+        const key = request.mode === "navigate" ? "./index.html" : request;
+        caches.open(CACHE).then((cache) => cache.put(key, copy));
+      }
+      return response;
+    })
+    .catch(() => caches.match(request.mode === "navigate" ? "./index.html" : request, { ignoreSearch: true }));
+}
+
 self.addEventListener("fetch", (event) => {
   const request = event.request;
-  if (request.method !== "GET" || new URL(request.url).origin !== self.location.origin) return;
-  if (request.mode === "navigate") {
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE).then((cache) => cache.put("./index.html", copy));
-          return response;
-        })
-        .catch(() => caches.match("./index.html"))
-    );
+  const url = new URL(request.url);
+  if (request.method !== "GET" || url.origin !== self.location.origin) return;
+  if (request.mode === "navigate" || url.pathname.endsWith("/") || CODE.test(url.pathname)) {
+    event.respondWith(networkFirst(request));
     return;
   }
   event.respondWith(caches.match(request).then((cached) => cached || fetch(request)));
