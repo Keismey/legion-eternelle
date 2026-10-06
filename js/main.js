@@ -14,6 +14,7 @@ import { ui, renderZone, renderTeam, renderBag, renderAwaken, renderQuests, rend
 import { openSheet, refreshSheet, closeSheet, sheetOpen } from "./ui/sheet.js";
 import { sfx, setSfx, unlockAudio } from "./ui/sfx.js";
 import { itemDetail, bestTarget } from "./ui/screens.js";
+import { PATCHNOTES, GAME_VERSION } from "./data/patchnotes.js";
 import { initTutorial, checkTutorial, tutorialPaused, replayTutorial } from "./ui/tutorial.js";
 import { fmt, pct, duration, esc, itemName, className, bgUrl, assetUrl } from "./ui/format.js";
 
@@ -294,13 +295,42 @@ function settingsHtml() {
       <p class="muted small-text">${t("settings.supportHint")}</p>
       <a class="btn full support-btn" href="https://ko-fi.com/keismey" target="_blank" rel="noopener">☕ ${t("settings.support")}</a>
     </div>
+    <button class="btn ghost" data-action="patchNotes">📜 ${t("settings.patchNotes")}${state.settings.seenPatch !== GAME_VERSION ? ` <span class="new-chip">${t("patch.new")}</span>` : ""}</button>
     <button class="btn ghost" data-action="replayTutorial">🎓 ${t("settings.tutorial")}</button>
     <div class="item-actions">
       ${confirmReset
         ? `<button class="btn danger" data-action="resetConfirm">${t("settings.resetConfirm")}</button><button class="btn ghost" data-action="cancelReset">${t("awaken.cancel")}</button>`
         : `<button class="btn ghost" data-action="reset">${t("settings.reset")}</button>`}
     </div>
-    <button class="btn full" data-action="closeSheet">${t("settings.close")}</button>`;
+    <button class="btn full" data-action="closeSheet">${t("settings.close")}</button>
+    <p class="muted small-text version-line">Légion Éternelle v${GAME_VERSION} · Keismey Studio</p>`;
+}
+
+// Notes de mise à jour (data/patchnotes.js) ; les ouvrir les marque comme lues.
+function patchNotesHtml() {
+  const lang = state.settings.lang;
+  const date = (iso) => {
+    try {
+      return new Date(`${iso}T12:00:00`).toLocaleDateString(lang === "fr" ? "fr-FR" : "en-GB", { day: "numeric", month: "long", year: "numeric" });
+    } catch {
+      return iso;
+    }
+  };
+  const entries = PATCHNOTES.map(
+    (p) => `
+      <section class="patch">
+        <div class="level-row"><h3>${t("patch.version", { v: p.version })}</h3><span class="muted small-text">${date(p.date)}</span></div>
+        <ul>${(p[lang] || p.fr).map((line) => `<li>${esc(line)}</li>`).join("")}</ul>
+      </section>`
+  ).join("");
+  return `
+    <h2>${t("settings.patchNotes")}</h2>
+    ${entries}
+    <button class="btn full" data-action="settings">${t("patch.back")}</button>`;
+}
+
+function syncSettingsDot() {
+  $("settingsDot").hidden = state.settings.seenPatch === GAME_VERSION;
 }
 
 function showOffline(result) {
@@ -570,6 +600,12 @@ const actions = {
     }
   },
   settings: () => settingsSheet(),
+  patchNotes: () => {
+    state.settings.seenPatch = GAME_VERSION;
+    changed = true;
+    syncSettingsDot();
+    openSheet(patchNotesHtml);
+  },
   replayTutorial: () => {
     closeSheet();
     replayTutorial();
@@ -804,11 +840,26 @@ function runSplash(skip) {
 }
 
 /* ---------- Démarrage ---------- */
+// Langue d'une nouvelle partie : ?lang=en (lien du hub), sinon celle du navigateur.
+function startLanguage() {
+  try {
+    const asked = new URLSearchParams(location.search).get("lang");
+    if (LANGUAGES[asked]) return asked;
+    return (navigator.language || "fr").toLowerCase().startsWith("fr") ? "fr" : "en";
+  } catch {
+    return "fr";
+  }
+}
+
 async function start(hot = {}) {
   registerServiceWorker();
   storage = await createStorage();
   const saved = hot.save || (await storage.load().catch(() => null));
   state = saved ? migrate(saved) : createState();
+  if (!saved) {
+    state.settings.lang = startLanguage();
+    state.settings.seenPatch = GAME_VERSION; // un nouveau joueur n'a rien à rattraper
+  }
   setLanguage(state.settings.lang);
   setSfx(state.settings.sfx);
   applyStaticTexts();
@@ -824,6 +875,7 @@ async function start(hot = {}) {
     changed: () => (changed = true),
   });
   renderAll();
+  syncSettingsDot();
   log(t("feed.welcome"));
   if (saved && !hot.save) showOffline(computeOffline(state));
   else if (!saved && hasLegacySave()) welcomeVeteran();

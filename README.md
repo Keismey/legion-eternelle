@@ -49,3 +49,9 @@ ULT=none node tools/simulate.js 8 # joueur absent : aucun ultime avant l'Instinc
 TUNE='{"boss":{"hp":5}}' node tools/simulate.js 4   # essayer un réglage sans toucher config.js
 node tools/calibrate.js           # taux de victoire par niveau et qualité d'équipement
 ```
+
+## Publier une mise à jour
+
+1. Ajouter un bloc en tête de `js/data/patchnotes.js` (version, date, changements FR/EN) : les joueurs voient une pastille sur les réglages.
+2. Changer `CACHE` dans `sw.js` pour que les versions installées se mettent à jour.
+3. Les réglages d'équilibrage sont tous dans `js/data/config.js` ; `tools/simulate.js` permet de vérifier avant de publier.
