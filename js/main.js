@@ -794,6 +794,10 @@ function frame(now) {
 function registerServiceWorker() {
   try {
     if (!("serviceWorker" in navigator) || window.claude || window.top !== window) return;
+    // Une nouvelle version prend la main : on recharge une fois pour tout avoir à jour.
+    if (navigator.serviceWorker.controller) {
+      navigator.serviceWorker.addEventListener("controllerchange", () => save().finally(() => location.reload()), { once: true });
+    }
     navigator.serviceWorker.register("sw.js").catch(() => {});
   } catch {
     /* navigateur sans service worker */
