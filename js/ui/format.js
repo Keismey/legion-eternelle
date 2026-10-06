@@ -35,7 +35,7 @@ export const SLOT_ICONS = Object.fromEntries(
   ["helmet", "gloves", "chest", "legs", "boots"].map((s) => [s, img(`assets/slots/${s}.webp`, "slot-img")])
 );
 export const MONSTER_ICONS = Object.fromEntries(
-  ["goblin", "ghoul", "wolf", "bandit", "spider", "orc", "skeleton", "cultist", "slime", "harpy"].map((m) => [m, img(`assets/monsters/${m}.webp`, "monster-img")])
+  ["goblin", "ghoul", "wolf", "bandit", "spider", "orc", "skeleton", "cultist", "slime", "harpy", "treant", "shard"].map((m) => [m, img(`assets/monsters/${m}.webp`, "monster-img")])
 );
 // Fond de décor pour une variable CSS. L'URL doit être absolue : une url() relative
 // dans une variable se résout depuis css/style.css, pas depuis la page.
@@ -48,9 +48,7 @@ export function assetUrl(path) {
 }
 export const bgUrl = (id) => assetUrl(`assets/bg/${id}.webp`);
 export const bossArt = (id) => img(`assets/bosses/${id}.webp`, "boss-img");
-// Créatures invoquées par les boss corrompus (pas d'image dédiée)
-MONSTER_ICONS.treant = '<span class="monster-emoji">🌳</span>';
-MONSTER_ICONS.shard = '<span class="monster-emoji">🪨</span>';
+// treant et shard : créatures invoquées par les boss corrompus.
 // Emblèmes des uniques ; un pouvoir sans image affiche ✦.
 const UNIQUE_ART = new Set(["executioner", "phoenix", "retaliate", "aegis", "frenzy", "chain", "vampiric", "titan", "tempest", "inferno", "bastion", "reaper"]);
 export const uniqueIcon = (id) =>

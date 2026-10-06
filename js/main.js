@@ -13,6 +13,7 @@ import { mountBattle, updateBattle, battleEvent, flashStatus } from "./ui/battle
 import { ui, renderZone, renderTeam, renderBag, renderAwaken, renderQuests, renderChallenges, slotSheet, itemSheet, classSheet, zoneSheet } from "./ui/screens.js";
 import { openSheet, refreshSheet, closeSheet, sheetOpen } from "./ui/sheet.js";
 import { sfx, setSfx, unlockAudio } from "./ui/sfx.js";
+import { initMusic, setMusicEnabled, setMusicMood } from "./ui/music.js";
 import { itemDetail, bestTarget } from "./ui/screens.js";
 import { PATCHNOTES, GAME_VERSION } from "./data/patchnotes.js";
 import { initTutorial, checkTutorial, tutorialPaused, replayTutorial } from "./ui/tutorial.js";
@@ -65,6 +66,7 @@ function toast(text) {
 function onGameEvent(type, data) {
   if (type === "wave") {
     mountBattle(data.battle);
+    setMusicMood(data.battle.boss ? "boss" : "main");
     dirty = true;
     return;
   }
@@ -362,10 +364,7 @@ function welcomeVeteran() {
 
 /* ---------- Musique ---------- */
 function syncMusic() {
-  const audio = $("music");
-  audio.volume = 0.35;
-  if (state.settings.music) audio.play().catch(() => {});
-  else audio.pause();
+  setMusicEnabled(state.settings.music);
 }
 
 /* ---------- Actions ---------- */
@@ -869,6 +868,7 @@ async function start(hot = {}) {
   applyStaticTexts();
   runSplash(Boolean(hot.save));
 
+  initMusic();
   game = createGame(state, { onEvent: onGameEvent });
   bindUi();
   initTutorial({

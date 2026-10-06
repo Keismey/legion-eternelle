@@ -1,6 +1,6 @@
 // Service worker : le jeu fonctionne hors connexion une fois installé.
 // Changer CACHE à chaque mise en ligne pour forcer la mise à jour.
-const CACHE = "legion-eternelle-v2.14.0";
+const CACHE = "legion-eternelle-v2.15.0";
 const FILES = [
   "./",
   "./index.html",
@@ -32,6 +32,8 @@ const FILES = [
   "./assets/monsters/ghoul.webp",
   "./assets/monsters/goblin.webp",
   "./assets/monsters/harpy.webp",
+  "./assets/monsters/treant.webp",
+  "./assets/monsters/shard.webp",
   "./assets/monsters/orc.webp",
   "./assets/monsters/skeleton.webp",
   "./assets/monsters/slime.webp",
@@ -76,6 +78,7 @@ const FILES = [
   "./assets/icon-512-maskable.png",
   "./assets/icon-512.png",
   "./assets/music.mp3",
+  "./assets/music-boss.mp3",
   "./css/style.css",
   "./js/core/challenges.js",
   "./js/core/combat.js",
@@ -99,6 +102,7 @@ const FILES = [
   "./js/ui/format.js",
   "./js/ui/screens.js",
   "./js/ui/sfx.js",
+  "./js/ui/music.js",
   "./js/ui/sheet.js",
   "./js/ui/tutorial.js",
 ];
