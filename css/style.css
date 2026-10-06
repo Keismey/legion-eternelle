@@ -72,7 +72,7 @@ p { margin: 0; }
   margin: 0 auto;
   min-height: 100%;
   padding-inline: 16px;
-  padding-block: 0 calc(84px + env(safe-area-inset-bottom, 0px));
+  padding-block: 0 calc(108px + env(safe-area-inset-bottom, 0px)); /* barre du bas + bosse du bouton Combat */
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -453,6 +453,41 @@ td.win-lo { color: var(--danger); }
   cursor: pointer;
 }
 .navbar button.active { color: var(--gold); background: var(--gold-soft); }
+/* Combat, le cœur du jeu : bouton central surélevé, la barre s'arrondit autour. */
+.navbar::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -33px;
+  width: 98px;
+  height: 98px;
+  margin-left: -49px;
+  border-radius: 50%;
+  background: rgb(11, 11, 16);
+  border: 1px solid var(--line);
+  clip-path: inset(0 0 64px 0); /* seule la bosse au-dessus de la barre est visible */
+  pointer-events: none;
+}
+.navbar button.nav-main { z-index: 1; padding-top: 0; }
+.navbar button.nav-main.active { background: none; }
+.nav-main .nav-ico {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  margin-top: -34px;
+  border-radius: 50%;
+  font-size: 27px;
+  background: radial-gradient(circle at 50% 35%, #2a2536, #14131d);
+  border: 2px solid var(--line);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.nav-main.active .nav-ico {
+  border-color: var(--gold);
+  background: radial-gradient(circle at 50% 35%, #4a3a12, #1c1608);
+  box-shadow: 0 0 18px rgba(242, 201, 76, 0.45), 0 4px 14px rgba(0, 0, 0, 0.55);
+}
 .nav-ico { font-size: 18px; line-height: 1.1; }
 .badge {
   position: absolute;

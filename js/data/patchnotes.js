@@ -3,6 +3,12 @@
 // et changer CACHE dans sw.js pour que les joueurs reçoivent la mise à jour.
 export const PATCHNOTES = [
   {
+    version: "2.0.1",
+    date: "2026-10-06",
+    fr: ["Le bouton Combat passe au centre de la barre du bas, en plus grand."],
+    en: ["The Battle button moves to the center of the bottom bar, and gets bigger."],
+  },
+  {
     version: "2.0",
     date: "2026-10-06",
     fr: [
