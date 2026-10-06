@@ -19751,7 +19751,9 @@ if (
                     className: "danger",
                     callback: () => {
                       window.__skipAutoSave = true;
-                      localStorage.clear();
+                      // N'efface que les données de Légion Éternelle : les autres jeux du même site gardent leurs sauvegardes
+                      [CONFIG.saveKey, ...CONFIG.oldKeys].forEach(k => localStorage.removeItem(k));
+                      Object.keys(localStorage).filter(k => k.startsWith("idleAutoRPG")).forEach(k => localStorage.removeItem(k));
                       location.reload();
                     }
                   }
