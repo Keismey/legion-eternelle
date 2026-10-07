@@ -3,6 +3,16 @@
 // et changer CACHE dans sw.js pour que les joueurs reçoivent la mise à jour.
 export const PATCHNOTES = [
   {
+    version: "2.0.3",
+    date: "2026-10-07",
+    fr: [
+      "Le lien « Jouer en Français / Play in English » du hub change aussi la langue d'une partie en cours.",
+    ],
+    en: [
+      "The hub's \u201cPlay in English / Jouer en Français\u201d link now also switches the language of an ongoing game.",
+    ],
+  },
+  {
     version: "2.0.2",
     date: "2026-10-06",
     fr: [

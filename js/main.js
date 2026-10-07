@@ -843,11 +843,26 @@ function runSplash(skip) {
 }
 
 /* ---------- Démarrage ---------- */
-// Langue d'une nouvelle partie : ?lang=en (lien du hub), sinon celle du navigateur.
-function startLanguage() {
+// Langue demandée par le lien du hub (?lang=fr / ?lang=en), ou null.
+// Le paramètre est retiré de l'adresse une fois lu : un simple rechargement
+// ne doit pas annuler un changement de langue fait ensuite dans les réglages.
+function askedLanguage() {
   try {
-    const asked = new URLSearchParams(location.search).get("lang");
-    if (LANGUAGES[asked]) return asked;
+    const url = new URL(location.href);
+    const asked = url.searchParams.get("lang");
+    if (url.searchParams.has("lang")) {
+      url.searchParams.delete("lang");
+      history.replaceState(history.state, "", url.pathname + url.search + url.hash);
+    }
+    return LANGUAGES[asked] ? asked : null;
+  } catch {
+    return null;
+  }
+}
+
+// Langue d'une nouvelle partie sans lien du hub : celle du navigateur.
+function browserLanguage() {
+  try {
     return (navigator.language || "fr").toLowerCase().startsWith("fr") ? "fr" : "en";
   } catch {
     return "fr";
@@ -859,9 +874,14 @@ async function start(hot = {}) {
   storage = await createStorage();
   const saved = hot.save || (await storage.load().catch(() => null));
   state = saved ? migrate(saved) : createState();
+  const asked = askedLanguage();
   if (!saved) {
-    state.settings.lang = startLanguage();
+    state.settings.lang = asked || browserLanguage();
     state.settings.seenPatch = GAME_VERSION; // un nouveau joueur n'a rien à rattraper
+  } else if (asked && !hot.save && asked !== state.settings.lang) {
+    // lien « Play in English / Jouer en Français » du hub : s'applique aussi à une partie en cours
+    state.settings.lang = asked;
+    changed = true;
   }
   setLanguage(state.settings.lang);
   setSfx(state.settings.sfx);
