@@ -768,7 +768,16 @@ details.options[open] summary { margin-bottom: 4px; }
 .tile-unique .unique-img { width: 18px; height: 18px; }
 
 /* Écran de démarrage : logo Keismey sur noir, puis écran titre (comme Abysses) */
-.splash { position: fixed; inset: 0; z-index: 50; background: #000; transition: opacity 0.65s; }
+.splash { position: fixed; inset: 0; z-index: 50; overflow: hidden; background: #000; transition: opacity 0.65s; }
+/* Écran large (ordinateur, tablette à l'horizontale) : l'image portrait garde ses proportions
+   dans une colonne centrée, et les côtés reprennent la même image, floue et assombrie. */
+.splash::before {
+  content: "";
+  position: absolute;
+  inset: -40px;
+  background: var(--title-bg, none) center / cover no-repeat, var(--title-fallback, none) center / cover no-repeat;
+  filter: blur(28px) brightness(0.35);
+}
 .splash.closing { opacity: 0; pointer-events: none; }
 .splash-logo {
   position: absolute;
@@ -785,6 +794,9 @@ details.options[open] summary { margin-bottom: 4px; }
 .splash-title {
   position: absolute;
   inset: 0;
+  width: min(100%, 62vh); /* jamais plus large qu'un écran de téléphone en hauteur */
+  margin: 0 auto;
+  box-shadow: 0 0 80px rgba(0, 0, 0, 0.8);
   display: flex;
   flex-direction: column;
   align-items: center;
