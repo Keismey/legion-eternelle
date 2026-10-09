@@ -3,6 +3,12 @@
 // et changer CACHE dans sw.js pour que les joueurs reçoivent la mise à jour.
 export const PATCHNOTES = [
   {
+    version: "2.0.4",
+    date: "2026-10-09",
+    fr: ["Sur ordinateur, l'écran titre garde ses proportions au lieu d'être étiré sur toute la largeur."],
+    en: ["On desktop, the title screen keeps its proportions instead of stretching across the whole width."],
+  },
+  {
     version: "2.0.3",
     date: "2026-10-07",
     fr: [

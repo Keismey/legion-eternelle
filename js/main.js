@@ -814,8 +814,9 @@ function runSplash(skip) {
   }
   $("splashTap").textContent = t(matchMedia("(hover: hover) and (pointer: fine)").matches ? "splash.click" : "splash.tap");
   const title = $("splashTitle");
-  title.style.setProperty("--title-bg", assetUrl("assets/title-bg.webp"));
-  title.style.setProperty("--title-fallback", bgUrl("campaign"));
+  // Sur le conteneur : l'écran titre et le fond flou des côtés s'en servent.
+  splash.style.setProperty("--title-bg", assetUrl("assets/title-bg.webp"));
+  splash.style.setProperty("--title-fallback", bgUrl("campaign"));
   const logo = $("splashLogo");
   let step = 0;
   const toTitle = () => {
