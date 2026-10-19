@@ -2,6 +2,7 @@
 // Le contexte audio ne démarre qu'après un geste du joueur.
 let ctx = null;
 let enabled = true;
+let volume = 1; // réglage du joueur (0 à 1)
 let master = null;
 const lastPlayed = {};
 
@@ -9,12 +10,17 @@ export function setSfx(on) {
   enabled = on;
 }
 
+export function setSfxVolume(v) {
+  volume = v;
+  if (master) master.gain.value = 0.18 * v;
+}
+
 export function unlockAudio() {
   if (ctx) return;
   try {
     ctx = new (window.AudioContext || window.webkitAudioContext)();
     master = ctx.createGain();
-    master.gain.value = 0.18;
+    master.gain.value = 0.18 * volume;
     master.connect(ctx.destination);
   } catch {
     ctx = null;

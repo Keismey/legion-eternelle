@@ -6,6 +6,7 @@ const FADE = 1.2; // secondes pour passer de 0 au volume plein
 let tracks = null; // { main, boss } : éléments <audio>
 const level = { main: 0, boss: 0 };
 let enabled = false;
+let volume = 1; // réglage du joueur (0 à 1)
 let mood = "main";
 let frame = 0;
 let last = 0;
@@ -13,6 +14,11 @@ let last = 0;
 export function initMusic() {
   tracks = { main: document.getElementById("music"), boss: document.getElementById("musicBoss") };
   for (const audio of Object.values(tracks)) audio.volume = 0;
+}
+
+export function setMusicVolume(v) {
+  volume = v;
+  apply();
 }
 
 export function setMusicEnabled(on) {
@@ -27,7 +33,7 @@ export function setMusicMood(next) {
   apply();
 }
 
-const target = (key) => (enabled && key === mood ? VOLUME : 0);
+const target = (key) => (enabled && key === mood ? VOLUME * volume : 0);
 
 function apply() {
   if (!tracks) return;

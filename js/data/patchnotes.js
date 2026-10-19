@@ -3,6 +3,12 @@
 // et changer CACHE dans sw.js pour que les joueurs reçoivent la mise à jour.
 export const PATCHNOTES = [
   {
+    version: "2.0.6",
+    date: "2026-10-19",
+    fr: ["Réglages : volume de la musique et des bruitages, sauvegarde à exporter ou importer, signaler un bug, retour à l'écran titre.", "Le jeu te tutoie désormais, comme tous les jeux de Keismey Studio."],
+    en: ["Settings: music and sound effects volume, save export and import, bug report, back to the title screen."],
+  },
+  {
     version: "2.0.5",
     date: "2026-10-19",
     fr: ["Le bouton retour du téléphone ne quitte plus le jeu d'un coup : il ferme la fenêtre ouverte, revient à l'onglet Combat, puis propose de revenir à l'écran titre. Depuis l'écran titre, il propose d'aller au hub Keismey Studio."],

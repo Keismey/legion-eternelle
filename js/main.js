@@ -12,8 +12,8 @@ import { startHunt, stopHunt, clampHuntLevel } from "./core/zones.js";
 import { mountBattle, updateBattle, battleEvent, flashStatus } from "./ui/battle.js";
 import { ui, renderZone, renderTeam, renderBag, renderAwaken, renderQuests, renderChallenges, slotSheet, itemSheet, classSheet, zoneSheet } from "./ui/screens.js";
 import { openSheet, refreshSheet, closeSheet, sheetOpen } from "./ui/sheet.js";
-import { sfx, setSfx, unlockAudio } from "./ui/sfx.js";
-import { initMusic, setMusicEnabled, setMusicMood } from "./ui/music.js";
+import { sfx, setSfx, setSfxVolume, unlockAudio } from "./ui/sfx.js";
+import { initMusic, setMusicEnabled, setMusicMood, setMusicVolume } from "./ui/music.js";
 import { itemDetail, bestTarget } from "./ui/screens.js";
 import { PATCHNOTES, GAME_VERSION } from "./data/patchnotes.js";
 import { initTutorial, checkTutorial, tutorialPaused, replayTutorial } from "./ui/tutorial.js";
@@ -286,19 +286,20 @@ function settingsHtml() {
   return `
     <h2>${t("settings.title")}</h2>
     <div class="toggle-row"><span>${t("settings.language")}</span><div class="chips">${langs}</div></div>
-    <label class="toggle-row" for="musicToggle"><span>${t("settings.music")}</span>
-      <span class="switch"><input type="checkbox" id="musicToggle" data-action="music" ${state.settings.music ? "checked" : ""}><span></span></span>
-    </label>
-    <label class="toggle-row" for="sfxToggle"><span>${t("settings.sfx")}</span>
-      <span class="switch"><input type="checkbox" id="sfxToggle" data-action="sfx" ${state.settings.sfx ? "checked" : ""}><span></span></span>
-    </label>
+    <label class="toggle-row vol-row"><span>${t("settings.musicVol")}</span>
+      <input type="range" id="musicVol" min="0" max="100" step="5" value="${Math.round(volOf("mv") * 100)}"></label>
+    <label class="toggle-row vol-row"><span>${t("settings.sfxVol")}</span>
+      <input type="range" id="sfxVol" min="0" max="100" step="5" value="${Math.round(volOf("sv") * 100)}"></label>
     <div class="toggle-row"><span>${t("settings.save")}</span><span class="muted small-text">${t(saveKind)}</span></div>
+    ${storage?.kind === "local" ? `<button class="btn ghost" data-action="saveIo">💾 ${t("settings.saveIo")}</button>` : ""}
     <div class="support">
       <p class="muted small-text">${t("settings.supportHint")}</p>
       <a class="btn full support-btn" href="https://ko-fi.com/keismey" target="_blank" rel="noopener">☕ ${t("settings.support")}</a>
     </div>
     <button class="btn ghost" data-action="patchNotes">📜 ${t("settings.patchNotes")}${state.settings.seenPatch !== GAME_VERSION ? ` <span class="new-chip">${t("patch.new")}</span>` : ""}</button>
     <button class="btn ghost" data-action="replayTutorial">🎓 ${t("settings.tutorial")}</button>
+    <button class="btn ghost" data-action="bug">🐞 ${t("settings.bug")}</button>
+    <button class="btn ghost" data-action="toTitle">🏰 ${t("settings.title2")}</button>
     <div class="item-actions">
       ${confirmReset
         ? `<button class="btn danger" data-action="resetConfirm">${t("settings.resetConfirm")}</button><button class="btn ghost" data-action="cancelReset">${t("awaken.cancel")}</button>`
@@ -363,9 +364,27 @@ function welcomeVeteran() {
 }
 
 /* ---------- Musique ---------- */
-function syncMusic() {
-  setMusicEnabled(state.settings.music);
+// Volumes 0 à 1 (Options) ; les anciennes parties avaient seulement « musique / effets : oui ou non ».
+function volOf(k) {
+  const s = state.settings;
+  if (typeof s[k] !== "number") s[k] = (k === "mv" ? s.music : s.sfx) === false ? 0 : 1;
+  return s[k];
 }
+function syncMusic() {
+  setMusicVolume(volOf("mv"));
+  setSfxVolume(volOf("sv"));
+  setMusicEnabled(volOf("mv") > 0);
+}
+document.addEventListener("input", (e) => {
+  const id = e.target?.id;
+  if (id !== "musicVol" && id !== "sfxVol") return;
+  const v = Number(e.target.value) / 100;
+  if (id === "musicVol") { state.settings.mv = v; state.settings.music = v > 0; }
+  else { state.settings.sv = v; state.settings.sfx = v > 0; setSfx(v > 0); }
+  syncMusic();
+  changed = true;
+});
+document.addEventListener("change", (e) => { if (e.target?.id === "sfxVol") sfx("legendary"); });
 
 /* ---------- Actions ---------- */
 const actions = {
@@ -382,6 +401,9 @@ const actions = {
     nextReveal();
   },
   revealNext: () => nextReveal(),
+  saveIo: () => window.KS?.saveDialog({ lang: state.settings.lang, keys: ["legionEternelle_v2"], save: () => save(), file: "legion-eternelle", accent: "#c9a45c" }),
+  bug: () => window.KS?.bug(state.settings.lang === "en" ? "Eternal Legion" : "Légion Éternelle", state.settings.lang),
+  toTitle: () => { closeSheet(); titleAgain(); },
   sfx: (el) => {
     state.settings.sfx = el.checked;
     setSfx(el.checked);
@@ -931,6 +953,7 @@ async function start(hot = {}) {
   }
   setLanguage(state.settings.lang);
   setSfx(state.settings.sfx);
+  setSfxVolume(volOf("sv"));
   applyStaticTexts();
   runSplash(Boolean(hot.save));
 
