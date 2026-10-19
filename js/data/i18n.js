@@ -415,10 +415,10 @@ const fr = {
   "splash.tap": "Touchez pour commencer",
   "splash.click": "Cliquez pour commencer",
   "back.titleQ": "Retour à l'écran titre ?",
-  "back.titleP": "Ta légion continue de se battre pendant ton absence.",
+  "back.titleP": "Votre légion continue de se battre pendant votre absence.",
   "back.titleY": "Écran titre",
   "back.hubQ": "Quitter Légion Éternelle ?",
-  "back.hubP": "Ta légion continue de se battre pendant ton absence. Tu retrouveras les autres jeux de Keismey Studio sur le hub.",
+  "back.hubP": "Votre légion continue de se battre pendant votre absence. Vous retrouverez les autres jeux de Keismey Studio sur le hub.",
   "back.hubY": "Aller au hub",
   "back.cancel": "Annuler",
 
