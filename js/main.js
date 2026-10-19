@@ -843,6 +843,51 @@ function runSplash(skip) {
   });
 }
 
+/* ---------- Bouton retour du téléphone (voir ks-back.js) ----------
+   fenêtre ou feuille ouverte → fermée ; autre onglet → Combat ; Combat → écran titre (confirmé) ;
+   écran titre → hub (confirmé). Le tutoriel garde la main. */
+const SPLASH0 = document.getElementById("splash")?.cloneNode(true);
+
+function backAsk(q, p, yes, fn, above) {
+  openSheet(`<h2>${t(q)}</h2><p class="muted">${t(p)}</p>
+    <button class="btn primary full" id="backYes">${t(yes)}</button>
+    <button class="btn ghost full" data-action="closeSheet">${t("back.cancel")}</button>`);
+  if (above) $("sheet").style.zIndex = 60;
+  $("backYes").onclick = () => { closeSheet(); fn(); };
+}
+
+function titleAgain() {
+  if (!SPLASH0 || $("splash")) return;
+  const splash = SPLASH0.cloneNode(true);
+  splash.querySelector("#splashLogo")?.remove();
+  splash.style.setProperty("--title-bg", assetUrl("assets/title-bg.webp"));
+  splash.style.setProperty("--title-fallback", bgUrl("campaign"));
+  document.body.appendChild(splash);
+  $("splashTap").textContent = t(matchMedia("(hover: hover) and (pointer: fine)").matches ? "splash.click" : "splash.tap");
+  let done = false;
+  $("splashTitle").addEventListener("click", () => {
+    if (done) return;
+    done = true;
+    splash.classList.add("closing");
+    setTimeout(() => splash.remove(), 650);
+  });
+}
+
+function onBack() {
+  $("sheet").style.zIndex = "";
+  if (!$("tuto").hidden) return;
+  if (!$("peek").hidden) return hidePeek();
+  if (!$("reveal").hidden) return nextReveal();
+  if (sheetOpen()) return closeSheet();
+  if ($("splash")) {
+    if ($("splashLogo")) return;
+    return backAsk("back.hubQ", "back.hubP", "back.hubY", () => window.KSBack?.toHub(), true);
+  }
+  if (activeTab !== "combat") return showTab("combat");
+  backAsk("back.titleQ", "back.titleP", "back.titleY", titleAgain);
+}
+window.KSBack?.init({ back: onBack, lang: () => (state?.settings?.lang === "en" ? "en" : "fr") });
+
 /* ---------- Démarrage ---------- */
 // Langue demandée par le lien du hub (?lang=fr / ?lang=en), ou null.
 // Le paramètre est retiré de l'adresse une fois lu : un simple rechargement

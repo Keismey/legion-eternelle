@@ -3,6 +3,12 @@
 // et changer CACHE dans sw.js pour que les joueurs reçoivent la mise à jour.
 export const PATCHNOTES = [
   {
+    version: "2.0.5",
+    date: "2026-10-19",
+    fr: ["Le bouton retour du téléphone ne quitte plus le jeu d'un coup : il ferme la fenêtre ouverte, revient à l'onglet Combat, puis propose de revenir à l'écran titre. Depuis l'écran titre, il propose d'aller au hub Keismey Studio."],
+    en: ["The phone's back button no longer leaves the game at once: it closes the open window, returns to the Combat tab, then offers to go back to the title screen. From the title screen, it offers to go to the Keismey Studio hub."],
+  },
+  {
     version: "2.0.4",
     date: "2026-10-09",
     fr: ["Sur ordinateur, l'écran titre garde ses proportions au lieu d'être étiré sur toute la largeur."],
