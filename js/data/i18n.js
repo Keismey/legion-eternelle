@@ -175,7 +175,7 @@ const fr = {
   "up.rank": "Rang {n}",
 
 
-  "settings.title": "Réglages",
+  "settings.title": "Options",
   "settings.language": "Langue",
   "settings.music": "Musique",
   "settings.on": "Activée",
@@ -776,7 +776,7 @@ const en = {
   "up.rank": "Rank {n}",
 
 
-  "settings.title": "Settings",
+  "settings.title": "Options",
   "settings.language": "Language",
   "settings.music": "Music",
   "settings.on": "On",

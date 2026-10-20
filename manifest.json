@@ -1,7 +1,7 @@
 {
   "name": "Légion Éternelle",
   "short_name": "Légion",
-  "description": "Idle RPG de Keismey Studio : farmez, équipez votre légion et repoussez le mur.",
+  "description": "Idle RPG de Keismey Studio : farme, équipe ta légion et repousse le mur.",
   "lang": "fr",
   "start_url": "./",
   "scope": "./",

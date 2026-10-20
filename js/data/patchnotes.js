@@ -5,8 +5,8 @@ export const PATCHNOTES = [
   {
     version: "2.0.6",
     date: "2026-10-19",
-    fr: ["Réglages : volume de la musique et des bruitages, sauvegarde à exporter ou importer, signaler un bug, retour à l'écran titre.", "Le jeu te tutoie désormais, comme tous les jeux de Keismey Studio."],
-    en: ["Settings: music and sound effects volume, save export and import, bug report, back to the title screen."],
+    fr: ["Options : volume de la musique et des bruitages, sauvegarde à exporter ou importer, signaler un bug, retour à l'écran titre.", "Le jeu te tutoie désormais, comme tous les jeux de Keismey Studio."],
+    en: ["Options: music and sound effects volume, save export and import, bug report, back to the title screen."],
   },
   {
     version: "2.0.5",
