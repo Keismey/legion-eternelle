@@ -1,6 +1,6 @@
 // Service worker : le jeu fonctionne hors connexion une fois installé.
 // Changer CACHE à chaque mise en ligne pour forcer la mise à jour.
-const CACHE = "legion-eternelle-v2.15.7";
+const CACHE = "legion-eternelle-v2.15.8";
 const FILES = [
   "./",
   "./index.html",

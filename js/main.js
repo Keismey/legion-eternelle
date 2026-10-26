@@ -306,7 +306,7 @@ function settingsHtml() {
         : `<button class="btn ghost" data-action="reset">${t("settings.reset")}</button>`}
     </div>
     <button class="btn full" data-action="closeSheet">${t("settings.close")}</button>
-    <p class="muted small-text version-line">Légion Éternelle v${GAME_VERSION} · Keismey Studio</p>`;
+    <p class="muted small-text version-line">Légion Éternelle v${GAME_VERSION} · Keismey Studio<br>${t("settings.credits")}</p>`;
 }
 
 // Notes de mise à jour (data/patchnotes.js) ; les ouvrir les marque comme lues.

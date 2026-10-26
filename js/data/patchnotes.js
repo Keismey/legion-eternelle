@@ -3,6 +3,12 @@
 // et changer CACHE dans sw.js pour que les joueurs reçoivent la mise à jour.
 export const PATCHNOTES = [
   {
+    version: "2.0.7",
+    date: "2026-10-26",
+    fr: ["Options : crédits du jeu."],
+    en: ["Options: game credits."],
+  },
+  {
     version: "2.0.6",
     date: "2026-10-19",
     fr: ["Options : volume de la musique et des bruitages, sauvegarde à exporter ou importer, signaler un bug, retour à l'écran titre.", "Le jeu te tutoie désormais, comme tous les jeux de Keismey Studio."],
