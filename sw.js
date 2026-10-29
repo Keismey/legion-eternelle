@@ -1,6 +1,6 @@
 // Service worker : le jeu fonctionne hors connexion une fois installé.
 // Changer CACHE à chaque mise en ligne pour forcer la mise à jour.
-const CACHE = "legion-eternelle-v2.15.9";
+const CACHE = "legion-eternelle-v2.15.10";
 const FILES = [
   "./",
   "./index.html",
@@ -124,7 +124,7 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k.startsWith("legion-eternelle-") && k !== CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
