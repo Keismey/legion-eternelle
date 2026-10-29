@@ -3,6 +3,12 @@
 // et changer CACHE dans sw.js pour que les joueurs reçoivent la mise à jour.
 export const PATCHNOTES = [
   {
+    version: "2.0.8",
+    date: "2026-10-29",
+    fr: ["Options : bouton « Retour au hub », et le même ordre que dans les autres jeux du studio."],
+    en: ["Options: a “Back to the hub” button, in the same order as the studio’s other games."],
+  },
+  {
     version: "2.0.7",
     date: "2026-10-26",
     fr: ["Options : crédits du jeu."],

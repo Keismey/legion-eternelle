@@ -285,21 +285,22 @@ function settingsHtml() {
   const saveKind = { cloud: "settings.saveCloud", local: "settings.saveLocal", memory: "settings.saveMemory" }[storage?.kind || "memory"];
   return `
     <h2>${t("settings.title")}</h2>
-    <div class="toggle-row"><span>${t("settings.language")}</span><div class="chips">${langs}</div></div>
     <label class="toggle-row vol-row"><span>${t("settings.musicVol")}</span>
       <input type="range" id="musicVol" min="0" max="100" step="5" value="${Math.round(volOf("mv") * 100)}"></label>
     <label class="toggle-row vol-row"><span>${t("settings.sfxVol")}</span>
       <input type="range" id="sfxVol" min="0" max="100" step="5" value="${Math.round(volOf("sv") * 100)}"></label>
+    <div class="toggle-row"><span>${t("settings.language")}</span><div class="chips">${langs}</div></div>
     <div class="toggle-row"><span>${t("settings.save")}</span><span class="muted small-text">${t(saveKind)}</span></div>
     ${storage?.kind === "local" ? `<button class="btn ghost" data-action="saveIo">💾 ${t("settings.saveIo")}</button>` : ""}
+    <button class="btn ghost" data-action="patchNotes">📜 ${t("settings.patchNotes")}${state.settings.seenPatch !== GAME_VERSION ? ` <span class="new-chip">${t("patch.new")}</span>` : ""}</button>
+    <button class="btn ghost" data-action="replayTutorial">🎓 ${t("settings.tutorial")}</button>
+    <button class="btn ghost" data-action="toTitle">🏰 ${t("settings.title2")}</button>
+    <button class="btn ghost" data-action="bug">🐞 ${t("settings.bug")}</button>
     <div class="support">
       <p class="muted small-text">${t("settings.supportHint")}</p>
       <a class="btn full support-btn" href="https://ko-fi.com/keismey" target="_blank" rel="noopener">☕ ${t("settings.support")}</a>
     </div>
-    <button class="btn ghost" data-action="patchNotes">📜 ${t("settings.patchNotes")}${state.settings.seenPatch !== GAME_VERSION ? ` <span class="new-chip">${t("patch.new")}</span>` : ""}</button>
-    <button class="btn ghost" data-action="replayTutorial">🎓 ${t("settings.tutorial")}</button>
-    <button class="btn ghost" data-action="bug">🐞 ${t("settings.bug")}</button>
-    <button class="btn ghost" data-action="toTitle">🏰 ${t("settings.title2")}</button>
+    <button class="btn ghost" data-action="toHub">🏠 ${t("settings.hub")}</button>
     <div class="item-actions">
       ${confirmReset
         ? `<button class="btn danger" data-action="resetConfirm">${t("settings.resetConfirm")}</button><button class="btn ghost" data-action="cancelReset">${t("awaken.cancel")}</button>`
@@ -404,6 +405,7 @@ const actions = {
   saveIo: () => window.KS?.saveDialog({ lang: state.settings.lang, keys: ["legionEternelle_v2"], save: () => save(), file: "legion-eternelle", accent: "#c9a45c" }),
   bug: () => window.KS?.bug(state.settings.lang === "en" ? "Eternal Legion" : "Légion Éternelle", state.settings.lang),
   toTitle: () => { closeSheet(); titleAgain(); },
+  toHub: async () => { try { await save(); } catch {} window.KSBack?.toHub(); },
   sfx: (el) => {
     state.settings.sfx = el.checked;
     setSfx(el.checked);
