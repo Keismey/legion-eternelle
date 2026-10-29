@@ -908,7 +908,11 @@ function onBack() {
   if (activeTab !== "combat") return showTab("combat");
   backAsk("back.titleQ", "back.titleP", "back.titleY", titleAgain);
 }
-window.KSBack?.init({ back: onBack, lang: () => (state?.settings?.lang === "en" ? "en" : "fr") });
+window.KSBack?.init({
+  back: onBack,
+  lang: () => (state?.settings?.lang === "en" ? "en" : "fr"),
+  title: () => !!$("splash") && !$("splashLogo") && !$("splash").classList.contains("closing") && $("tuto").hidden && !sheetOpen(),
+});
 
 /* ---------- Démarrage ---------- */
 // Langue demandée par le lien du hub (?lang=fr / ?lang=en), ou null.
