@@ -758,7 +758,12 @@ function bindUi() {
     if (el.type === "checkbox" && el.dataset.action) actions[el.dataset.action]?.(el);
   });
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && sheetOpen()) closeSheet();
+    // Échap ferme la fiche ; preventDefault pour que ks-back.js n'enchaîne pas
+    // sur « Revenir à l'écran titre ? » dans la même frappe.
+    if (event.key === "Escape" && sheetOpen()) {
+      event.preventDefault();
+      closeSheet();
+    }
     const el = event.target.closest?.('[role="button"][data-action]');
     if (el && (event.key === "Enter" || event.key === " ")) {
       event.preventDefault();
