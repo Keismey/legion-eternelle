@@ -1,6 +1,9 @@
 // Service worker : le jeu fonctionne hors connexion une fois installé.
 // Changer CACHE à chaque mise en ligne pour forcer la mise à jour.
-const CACHE = "legion-eternelle-v2.15.13";
+const CACHE = "legion-eternelle-v2.15.14";
+// Musiques (4,8 Mo, coupées par défaut) : hors du pré-cache, gardées à la première écoute
+// dans un cache à part qui survit aux mises à jour. Changer le numéro si un MP3 change.
+const MEDIA = "legion-eternelle-media-1";
 const FILES = [
   "./",
   "./index.html",
@@ -79,8 +82,6 @@ const FILES = [
   "./assets/heroes/warrior.webp",
   "./assets/icon-512-maskable.png",
   "./assets/icon-512.png",
-  "./assets/music.mp3",
-  "./assets/music-boss.mp3",
   "./css/style.css",
   "./js/core/challenges.js",
   "./js/core/combat.js",
@@ -124,7 +125,7 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((keys) => Promise.all(keys.filter((k) => k.startsWith("legion-eternelle-") && k !== CACHE).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k.startsWith("legion-eternelle-") && k !== CACHE && k !== MEDIA).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
@@ -136,20 +137,64 @@ const CODE = /\.(?:html|js|css|json)$/;
 function networkFirst(request) {
   return fetch(request.url, { cache: "no-cache" })
     .then((response) => {
+      const key = request.mode === "navigate" ? "./index.html" : request;
       if (response.ok) {
         const copy = response.clone();
-        const key = request.mode === "navigate" ? "./index.html" : request;
         caches.open(CACHE).then((cache) => cache.put(key, copy));
+        return response;
       }
+      // Serveur en panne (5xx) : la copie en cache plutôt qu'une page d'erreur.
+      if (response.status >= 500) return caches.match(key, { ignoreSearch: true }).then((cached) => cached || response);
       return response;
     })
     .catch(() => caches.match(request.mode === "navigate" ? "./index.html" : request, { ignoreSearch: true }));
+}
+
+// Musique : le navigateur la lit par plages (en-tête Range). Le fichier entier est gardé
+// dans MEDIA ; on y découpe la plage demandée (réponse 206, exigée par Safari).
+function music(event, url) {
+  const range = event.request.headers.get("range");
+  return caches.match(url.pathname, { cacheName: MEDIA }).then((hit) => {
+    if (!hit) {
+      event.waitUntil(
+        fetch(url.pathname)
+          .then((full) => {
+            if (full.status === 200) return caches.open(MEDIA).then((cache) => cache.put(url.pathname, full));
+          })
+          .catch(() => {})
+      );
+      return fetch(event.request);
+    }
+    if (!range) return hit;
+    return hit.arrayBuffer().then((buf) => {
+      const m = /bytes=(\d*)-(\d*)/.exec(range) || [];
+      const size = buf.byteLength;
+      const start = m[1] ? +m[1] : m[2] ? Math.max(0, size - +m[2]) : 0;
+      const end = m[1] && m[2] ? Math.min(+m[2], size - 1) : size - 1;
+      if (start >= size || start > end) {
+        return new Response(null, { status: 416, headers: { "Content-Range": `bytes */${size}` } });
+      }
+      return new Response(buf.slice(start, end + 1), {
+        status: 206,
+        headers: {
+          "Content-Type": "audio/mpeg",
+          "Content-Range": `bytes ${start}-${end}/${size}`,
+          "Content-Length": String(end - start + 1),
+          "Accept-Ranges": "bytes",
+        },
+      });
+    });
+  });
 }
 
 self.addEventListener("fetch", (event) => {
   const request = event.request;
   const url = new URL(request.url);
   if (request.method !== "GET" || url.origin !== self.location.origin) return;
+  if (url.pathname.endsWith(".mp3")) {
+    event.respondWith(music(event, url));
+    return;
+  }
   if (request.mode === "navigate" || url.pathname.endsWith("/") || CODE.test(url.pathname)) {
     event.respondWith(networkFirst(request));
     return;

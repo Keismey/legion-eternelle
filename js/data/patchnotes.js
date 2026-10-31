@@ -3,6 +3,22 @@
 // et changer CACHE dans sw.js pour que les joueurs reçoivent la mise à jour.
 export const PATCHNOTES = [
   {
+    version: "2.0.9",
+    date: "2026-10-31",
+    fr: [
+      "Mobile : boutons et réglages plus grands, plus faciles à toucher.",
+      "La musique se coupe quand tu changes d'application ou verrouilles ton téléphone.",
+      "Sur ordinateur, Échap ferme la fenêtre ouverte sans proposer de quitter.",
+      "Premier lancement plus léger : les musiques ne se téléchargent que si tu les actives.",
+    ],
+    en: [
+      "Mobile: bigger buttons and settings, easier to tap.",
+      "Music stops when you switch apps or lock your phone.",
+      "On computer, Escape closes the open window without offering to quit.",
+      "Lighter first launch: music is only downloaded if you turn it on.",
+    ],
+  },
+  {
     version: "2.0.8",
     date: "2026-10-29",
     fr: ["Options : bouton « Retour au hub », et le même ordre que dans les autres jeux du studio."],
