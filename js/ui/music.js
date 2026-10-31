@@ -8,12 +8,31 @@ const level = { main: 0, boss: 0 };
 let enabled = false;
 let volume = 1; // réglage du joueur (0 à 1)
 let mood = "main";
+let hidden = false; // onglet masqué ou application en arrière-plan : silence
 let frame = 0;
 let last = 0;
 
 export function initMusic() {
   tracks = { main: document.getElementById("music"), boss: document.getElementById("musicBoss") };
   for (const audio of Object.values(tracks)) audio.volume = 0;
+  // Sans ça, la musique continue quand on change d'application ou verrouille le téléphone.
+  // Coupure franche (le fondu tourne sur requestAnimationFrame, figé en arrière-plan),
+  // puis fondu d'entrée au retour.
+  document.addEventListener("visibilitychange", () => {
+    hidden = document.hidden;
+    if (hidden) {
+      for (const [key, audio] of Object.entries(tracks)) {
+        audio.pause();
+        level[key] = 0;
+        try {
+          audio.volume = 0;
+        } catch {
+          /* volume en lecture seule */
+        }
+      }
+    }
+    apply();
+  });
 }
 
 export function setMusicVolume(v) {
@@ -33,7 +52,7 @@ export function setMusicMood(next) {
   apply();
 }
 
-const target = (key) => (enabled && key === mood ? VOLUME * volume : 0);
+const target = (key) => (enabled && !hidden && key === mood ? VOLUME * volume : 0);
 
 function apply() {
   if (!tracks) return;
